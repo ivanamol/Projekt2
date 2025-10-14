@@ -6,6 +6,7 @@
 # """
 
 from random import randint
+from datetime import datetime
 
 def pocet_znaku_nejdelsi_vety(text: str):
     upraveny_text = text.split("\n")
@@ -76,6 +77,12 @@ def pocet_cow(hracovo_hadani: str, vygenerovane_cislo: str):
     pocet = jednotne_nebo_mnozne(cow, "cow")
     return print(f"{cow} {pocet}")
 
+def doba_hadani(start_time, end_time):
+    celkove_vteriny = int((end_time - start_time).total_seconds())
+    minuty = int(celkove_vteriny / 60)
+    vteřiny = celkove_vteriny % 60
+    return (f"Guess time: {minuty} min {vteřiny} s")
+
 uvodni_text = """Hi there!
 I've generated a random 4 digit number for you.
 Let's play a bulls and cows game.
@@ -86,6 +93,7 @@ vygenerovane_cislo = generator_cisel_hra(4)
 print(vygenerovane_cislo)
 uprav_uvodni_text(uvodni_text)
 hrac_hada = input(">>> ")
+start_time = datetime.now()
 over_vstup_hrace(hrac_hada, 4)
 pokus = 1
 while hrac_hada != vygenerovane_cislo:
@@ -98,6 +106,11 @@ while hrac_hada != vygenerovane_cislo:
         print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
         hrac_hada = input(">>> ")
 else:
+    end_time = datetime.now()
+    guess_time = doba_hadani(start_time, end_time)
+    print(guess_time)
     print("Correct, you've guessed the right number\nin " + str(pokus) + " guesses!")
     print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
     print("That's amazing!")
+    guess_time = doba_hadani(start_time, end_time)
+    print(guess_time)
