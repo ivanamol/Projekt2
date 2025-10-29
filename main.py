@@ -7,9 +7,9 @@
 from random import randint
 from datetime import datetime
      
-def pocet_znaku_nejdelsi_vety(text: str) -> int:
+def pocet_znaku_nejdelsiho_radku(text: str) -> int:
     """
-    Projde jednotlivé řádky, nalezne na jakém z nich je nejdelší text a vrátí počet jeho znaků
+    Projde jednotlivé řádky textu, nalezne na jakém z nich je nejdelší text a vrátí počet jeho znaků.
     """
     upraveny_text = text.split("\n")
     delky_vet = [len(veta) for veta in upraveny_text]
@@ -17,20 +17,20 @@ def pocet_znaku_nejdelsi_vety(text: str) -> int:
 
 def uprav_uvodni_text(text: str) -> str:
     """
-    Naformátuje zadaný text
+    Naformátuje zadaný text.
     """
     upraveny_text = text.split("\n")
     return (f"""{upraveny_text[0]}
-{"-" * pocet_znaku_nejdelsi_vety(text)}
+{"-" * pocet_znaku_nejdelsiho_radku(text)}
 {upraveny_text[1]}
 {upraveny_text[2]}
-{"-" * pocet_znaku_nejdelsi_vety(text)}
+{"-" * pocet_znaku_nejdelsiho_radku(text)}
 {upraveny_text[3]:}
-{"-" * pocet_znaku_nejdelsi_vety(text)}""")
+{"-" * pocet_znaku_nejdelsiho_radku(text)}""")
 
-def generator_cisel_hra(pocet_cisel: int) -> str:
+def generator_cisel(pocet_cisel: int) -> str:
     """
-    Vygeneruje náhodná čísla - dle zadaného počtu
+    Vygeneruje určitý počet náhodných čísel - dle zadaného počtu, číslo nesmí začínat nulou, číslice musí být unikátní
     """
     vybrana_cisla = set()
     while len(vybrana_cisla) < pocet_cisel:
@@ -58,50 +58,41 @@ def over_vstup_hrace(hracovo_hadani: str, pocet_cisel: int) -> str:
     
 def jednotne_nebo_mnozne(number: int, objekt: str) -> str:
     """
-    Jde o ropoznání, zda dát koncovku "s" u množného čísla nebo nuly
+    K určenému slovu zadat koncovku "s" pokud se jedná o množné číslo nebo počet 0
     """
     if number == 1:
         return objekt
     else:
         return objekt + "s"
     
-def pocet_bull(hracovo_hadani: str, vygenerovane_cislo: str) -> str:
+def pocet_bull(hracovo_hadani: str, vygenerovane_cislo: str) -> int:
     """
-    Vrátí kolik hádaných čísel je správně uhodnuto a se správným umístěním
+    Vrátí kolik hádaných čísel je správně uhodnuto se správným umístěním
     """
     bull = 0
-    if (hracovo_hadani[0] == vygenerovane_cislo[0]):
-        bull = bull + 1
-    if (hracovo_hadani[1] == vygenerovane_cislo[1]):
-        bull = bull + 1
-    if (hracovo_hadani[2] == vygenerovane_cislo[2]):
-        bull = bull + 1
-    if (hracovo_hadani[3] == vygenerovane_cislo[3]):
-        bull = bull + 1
-    pocet = jednotne_nebo_mnozne(bull, "bull")
-    return (f"{bull} {pocet}")
+    for i in range(0, len(vygenerovane_cislo)):
+        if hracovo_hadani[i] == vygenerovane_cislo[i]:
+            bull = bull + 1
+    return bull
 
-def pocet_cow(hracovo_hadani: str, vygenerovane_cislo: str):
+def pocet_cow(hracovo_hadani: str, vygenerovane_cislo: str) -> int:
     """
     Vrátí kolik hádaných čísel je správně uhodnuto, ale v nesprávném umístění
     """
     cow = 0
-    if (hracovo_hadani[0] != vygenerovane_cislo[0]) and (hracovo_hadani[0] in vygenerovane_cislo):
+    for i in range(0, len(vygenerovane_cislo)):
+        if (hracovo_hadani[i] != vygenerovane_cislo[i]) and (hracovo_hadani[i] in vygenerovane_cislo):
             cow = cow + 1
-    if (hracovo_hadani[1] != vygenerovane_cislo[1]) and (hracovo_hadani[1] in vygenerovane_cislo):
-            cow = cow + 1
-    if (hracovo_hadani[2] != vygenerovane_cislo[2]) and (hracovo_hadani[2] in vygenerovane_cislo):
-            cow = cow + 1
-    if (hracovo_hadani[3] != vygenerovane_cislo[3]) and(hracovo_hadani[3] in vygenerovane_cislo):
-            cow = cow + 1
-    pocet = jednotne_nebo_mnozne(cow, "cow")
-    return (f"{cow} {pocet}")
+    return cow
 
-def doba_hadani(start_time, end_time):
+def doba_hadani(start_time: datetime, end_time: datetime) -> str:
+    """
+    Doba trvání od začátku nějaké činnosti do jejího konce - časový údaj vrací v minutách a sekundách
+    """
     celkove_vteriny = (end_time - start_time).total_seconds()
     minuty = int(celkove_vteriny / 60)
-    vteřiny = int(celkove_vteriny % 60)
-    return (f"Guess time: {minuty} min {vteřiny} s")
+    vteriny = int(celkove_vteriny % 60)
+    return minuty, vteriny
      
 hra_cislo = 1
 statistika = {}
@@ -112,34 +103,42 @@ Let's play a bulls and cows game.
 Enter a number:
 """
 
-    vygenerovane_cislo = generator_cisel_hra(4)
+    vygenerovane_cislo = generator_cisel(4)
     print(vygenerovane_cislo)
     print(uprav_uvodni_text(uvodni_text))
     hrac_hada = input(">>> ")
+
     start_time = datetime.now()
-    while over_vstup_hrace(hrac_hada, 4) != "OK":
-        print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
+
+    while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
+        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
         hrac_hada = input(">>> ")
+    #chci do pokusů započítat jen relevantní "správně" zadané inputy, nesprávně zadané budu ignorovat - nebudu je započítávat
     pokus = 1
+    
     while hrac_hada != vygenerovane_cislo:
         pokus = pokus + 1
-        print(pocet_bull(hrac_hada, vygenerovane_cislo))
-        print(pocet_cow(hrac_hada, vygenerovane_cislo))
-        print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
+        bull_count = pocet_bull(hrac_hada, vygenerovane_cislo)
+        regural_plural_bull = jednotne_nebo_mnozne(bull_count, "bull")
+        cow_count = pocet_cow(hrac_hada, vygenerovane_cislo)
+        regural_plural_cow = jednotne_nebo_mnozne(cow_count, "cow")
+        print(f"{bull_count} {regural_plural_bull}, {cow_count} {regural_plural_cow}")
+        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
         hrac_hada = input(">>> ")
-        while over_vstup_hrace(hrac_hada, 4) != "OK":
-            print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
+        while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
+            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
             hrac_hada = input(">>> ")
     else:
         end_time = datetime.now()
         print("Correct, you've guessed the right number\nin " + str(pokus) + " guesses!")
-        print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
+        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
         print("That's amazing!")
-        guess_time = doba_hadani(start_time, end_time)
-        print(guess_time)
-        print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
+        min, sec = doba_hadani(start_time, end_time)
+        print(f"Guess time: {min} min {sec} s")
+        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
         statistika[hra_cislo] = pokus
     hra_cislo = hra_cislo + 1
-    print(f"""Statistika her - číslo hry : počet pokusů {statistika}""")
-    print(f"{"-" * pocet_znaku_nejdelsi_vety(uvodni_text)}")
+    print(f"""Statistika her - číslo hry: počet pokusů
+{statistika}""")
+    print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
 
