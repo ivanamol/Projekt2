@@ -1,5 +1,6 @@
 # """
 # projekt2.py: druhý projekt do Engeto Online kurzu Tester s Pythonem
+#
 # author: Ivana Molnárová
 # email: ivaryd@post.cz
 # """
@@ -93,52 +94,54 @@ def doba_hadani(start_time: datetime, end_time: datetime) -> str:
     minuty = int(celkove_vteriny / 60)
     vteriny = int(celkove_vteriny % 60)
     return minuty, vteriny
-     
-hra_cislo = 1
-statistika = {}
-while True:
-    uvodni_text = """Hi there!
+
+if __name__ == "__main__":    
+
+    hra_cislo = 1
+    statistika = {}
+    while True:
+        uvodni_text = """Hi there!
 I've generated a random 4 digit number for you.
 Let's play a bulls and cows game.
 Enter a number:
 """
 
-    vygenerovane_cislo = generator_cisel(4)
-    print(vygenerovane_cislo)
-    print(uprav_uvodni_text(uvodni_text))
-    hrac_hada = input(">>> ")
-
-    start_time = datetime.now()
-
-    while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
-        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+        vygenerovane_cislo = generator_cisel(4)
+        print(vygenerovane_cislo)
+        print(uprav_uvodni_text(uvodni_text))
         hrac_hada = input(">>> ")
-    #chci do pokusů započítat jen relevantní "správně" zadané inputy, nesprávně zadané budu ignorovat - nebudu je započítávat
-    pokus = 1
-    
-    while hrac_hada != vygenerovane_cislo:
-        pokus = pokus + 1
-        bull_count = pocet_bull(hrac_hada, vygenerovane_cislo)
-        regural_plural_bull = jednotne_nebo_mnozne(bull_count, "bull")
-        cow_count = pocet_cow(hrac_hada, vygenerovane_cislo)
-        regural_plural_cow = jednotne_nebo_mnozne(cow_count, "cow")
-        print(f"{bull_count} {regural_plural_bull}, {cow_count} {regural_plural_cow}")
-        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-        hrac_hada = input(">>> ")
+
+        start_time = datetime.now()
+
         while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
             print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
             hrac_hada = input(">>> ")
-    else:
-        end_time = datetime.now()
-        print("Correct, you've guessed the right number\nin " + str(pokus) + " guesses!")
-        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-        print("That's amazing!")
-        min, sec = doba_hadani(start_time, end_time)
-        print(f"Guess time: {min} min {sec} s")
-        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-        statistika[hra_cislo] = pokus
-    hra_cislo = hra_cislo + 1
-    print(f"""Statistika her - číslo hry: počet pokusů
+        #chci do pokusů započítat jen relevantní "správně" zadané inputy, nesprávně zadané budu ignorovat - nebudu je započítávat
+        pokus = 1
+    
+        while hrac_hada != vygenerovane_cislo:
+            pokus = pokus + 1
+            bull_count = pocet_bull(hrac_hada, vygenerovane_cislo)
+            regural_plural_bull = jednotne_nebo_mnozne(bull_count, "bull")
+            cow_count = pocet_cow(hrac_hada, vygenerovane_cislo)
+            regural_plural_cow = jednotne_nebo_mnozne(cow_count, "cow")
+            print(f"{bull_count} {regural_plural_bull}, {cow_count} {regural_plural_cow}")
+            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+            hrac_hada = input(">>> ")
+            while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
+                print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+                hrac_hada = input(">>> ")
+        else:
+            end_time = datetime.now()
+            print("Correct, you've guessed the right number\nin " + str(pokus) + " guesses!")
+            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+            print("That's amazing!")
+            min, sec = doba_hadani(start_time, end_time)
+            print(f"Guess time: {min} min {sec} s")
+            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+            statistika[hra_cislo] = pokus
+        hra_cislo = hra_cislo + 1
+        print(f"""Statistika her - číslo hry: počet pokusů
 {statistika}""")
-    print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
 
