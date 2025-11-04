@@ -1,6 +1,6 @@
 # """
 # projekt2.py: druhý projekt do Engeto Online kurzu Tester s Pythonem
-#
+
 # author: Ivana Molnárová
 # email: ivaryd@post.cz
 # """
@@ -8,140 +8,142 @@
 from random import randint
 from datetime import datetime
      
-def pocet_znaku_nejdelsiho_radku(text: str) -> int:
+def count_characters_longest_line(text: str) -> int:
     """
-    Projde jednotlivé řádky textu, nalezne na jakém z nich je nejdelší text a vrátí počet jeho znaků.
+    It goes through each line of text, finds which one has the longest text, and returns the number of characters in it.
     """
-    upraveny_text = text.split("\n")
-    delky_vet = [len(veta) for veta in upraveny_text]
-    return max(delky_vet)
+    edited_text = text.split("\n")
+    sentence_length = [len(sentence) for sentence in edited_text]
+    return max(sentence_length)
 
-def uprav_uvodni_text(text: str) -> str:
+def edit_introductory_text(text: str) -> str:
     """
-    Naformátuje zadaný text.
+    Formats the introductory text. (Necessary use of the function
+    "count_characters_longest_line").
     """
-    upraveny_text = text.split("\n")
-    return (f"""{upraveny_text[0]}
-{"-" * pocet_znaku_nejdelsiho_radku(text)}
-{upraveny_text[1]}
-{upraveny_text[2]}
-{"-" * pocet_znaku_nejdelsiho_radku(text)}
-{upraveny_text[3]:}
-{"-" * pocet_znaku_nejdelsiho_radku(text)}""")
+    edited_text = text.split("\n")
+    return (f"""{edited_text[0]}
+{"-" * count_characters_longest_line(text)}
+{edited_text[1]}
+{edited_text[2]}
+{"-" * count_characters_longest_line(text)}
+{edited_text[3]:}
+{"-" * count_characters_longest_line(text)}""")
 
-def generator_cisel(pocet_cisel: int) -> str:
+def number_generator(number_of_numbers: int) -> str:
     """
-    Vygeneruje určitý počet náhodných čísel - dle zadaného počtu, číslo nesmí začínat nulou, číslice musí být unikátní
+    Generates the selected number of random numbers - according to the specified number, the number must not start with zero, the digits must be unique.
     """
-    vybrana_cisla = set()
-    while len(vybrana_cisla) < pocet_cisel:
-        cislo = randint(0, 9)
-        vybrana_cisla.add(cislo)
-        cisla_ke_hre = str(vybrana_cisla).replace("{","").replace(".","").replace("}","").replace(",","").replace(" ","")
-        if cisla_ke_hre[0] == "0":
-            vybrana_cisla.remove(0)
-    return cisla_ke_hre
+    selected_numbers = set()
+    while len(selected_numbers) < number_of_numbers:
+        number = randint(0, 9)
+        selected_numbers.add(number)
+        numbers_play = str(selected_numbers).replace("{","").replace(".","").replace("}","").replace(",","").replace(" ","")
+        if numbers_play[0] == "0":
+            selected_numbers.remove(0)
+    return numbers_play
 
-def over_vstup_hrace(hracovo_hadani: str, pocet_cisel: int) -> str:
+def verify_player_input(player_guess: str, number_of_numbers: int) -> str:
     """
-    Ověří, zda hráč zadal číslo, se kterým může hra pokračovat, pokud ne, vrátí hráči upozornění, z jakého důvodu není možné daný vstup použít
+    It verifies whether the player has entered a number with which the game can continue, if not, it returns a notification to the player explaining why the input cannot be used.
     """
-    if not hracovo_hadani.isdigit():
+    if not player_guess.isdigit():
         return print("The input other than a number.")
-    elif len(hracovo_hadani) != pocet_cisel:
-        return print(f"The input does not contain exactly {pocet_cisel} numbers.")
-    elif hracovo_hadani[0] == "0":
+    elif len(player_guess) != number_of_numbers:
+        return print(f"The input does not contain exactly {number_of_numbers} numbers.")
+    elif player_guess[0] == "0":
         return print("The number must not start with a zero.")
-    elif len(hracovo_hadani) != len(set(hracovo_hadani)):
+    elif len(player_guess) != len(set(player_guess)):
         return print("The number must not contain duplicates.")
     else:
          return "OK"
     
-def jednotne_nebo_mnozne(number: int, objekt: str) -> str:
+def singular_or_plural(number: int, noun: str) -> str:
     """
-    K určenému slovu zadat koncovku "s" pokud se jedná o množné číslo nebo počet 0
+    Adds the ending "s" to the entered noun if it is plural (number > 1 or number is 0.
     """
     if number == 1:
-        return objekt
+        return noun
     else:
-        return objekt + "s"
+        return noun + "s"
     
-def pocet_bull(hracovo_hadani: str, vygenerovane_cislo: str) -> int:
+def count_bull(player_guess: str, generated_number: str) -> int:
     """
-    Vrátí kolik hádaných čísel je správně uhodnuto se správným umístěním
+    Returns how many guessed numbers are correctly guessed with the correct placement.
     """
     bull = 0
-    for i in range(0, len(vygenerovane_cislo)):
-        if hracovo_hadani[i] == vygenerovane_cislo[i]:
+    for i in range(0, len(generated_number)):
+        if player_guess[i] == generated_number[i]:
             bull = bull + 1
     return bull
 
-def pocet_cow(hracovo_hadani: str, vygenerovane_cislo: str) -> int:
+def count_cow(player_guess: str, generated_number: str) -> int:
     """
-    Vrátí kolik hádaných čísel je správně uhodnuto, ale v nesprávném umístění
+    Returns how many guessed numbers are guessed correctly but in the wrong location
     """
     cow = 0
-    for i in range(0, len(vygenerovane_cislo)):
-        if (hracovo_hadani[i] != vygenerovane_cislo[i]) and (hracovo_hadani[i] in vygenerovane_cislo):
+    for i in range(0, len(generated_number)):
+        if (player_guess[i] != generated_number[i]) and (player_guess[i] in generated_number):
             cow = cow + 1
     return cow
 
-def doba_hadani(start_time: datetime, end_time: datetime) -> str:
+def guess_time(start_time: datetime, end_time: datetime) -> str:
     """
-    Doba trvání od začátku nějaké činnosti do jejího konce - časový údaj vrací v minutách a sekundách
+    Duration from the start of an activity to its end - returns the time in minutes and seconds
     """
-    celkove_vteriny = (end_time - start_time).total_seconds()
-    minuty = int(celkove_vteriny / 60)
-    vteriny = int(celkove_vteriny % 60)
-    return minuty, vteriny
+    total_seconds = (end_time - start_time).total_seconds()
+    minutes = int(total_seconds / 60)
+    seconds = int(total_seconds % 60)
+    return minutes, seconds
 
 if __name__ == "__main__":    
 
-    hra_cislo = 1
-    statistika = {}
+    game_number = 1
+    statistics = {}
     while True:
-        uvodni_text = """Hi there!
+        introductory_text = """Hi there!
 I've generated a random 4 digit number for you.
 Let's play a bulls and cows game.
 Enter a number:
 """
 
-        vygenerovane_cislo = generator_cisel(4)
-        print(vygenerovane_cislo)
-        print(uprav_uvodni_text(uvodni_text))
-        hrac_hada = input(">>> ")
+        generated_number = number_generator(4)
+        print(edit_introductory_text(introductory_text))
+        number_of_dashes = count_characters_longest_line(introductory_text)
+        player_guess = input(">>> ")
 
         start_time = datetime.now()
 
-        while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
-            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-            hrac_hada = input(">>> ")
-        #chci do pokusů započítat jen relevantní "správně" zadané inputy, nesprávně zadané budu ignorovat - nebudu je započítávat
-        pokus = 1
+        while verify_player_input(player_guess, len(generated_number)) != "OK":
+            print(f"{"-" * number_of_dashes}")
+            player_guess = input(">>> ")
+
+        # I want to count only relevant "correctly" entered inputs in the attempts, I will ignore incorrectly entered inputs.
+        number_of_guess = 1
     
-        while hrac_hada != vygenerovane_cislo:
-            pokus = pokus + 1
-            bull_count = pocet_bull(hrac_hada, vygenerovane_cislo)
-            regural_plural_bull = jednotne_nebo_mnozne(bull_count, "bull")
-            cow_count = pocet_cow(hrac_hada, vygenerovane_cislo)
-            regural_plural_cow = jednotne_nebo_mnozne(cow_count, "cow")
-            print(f"{bull_count} {regural_plural_bull}, {cow_count} {regural_plural_cow}")
-            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-            hrac_hada = input(">>> ")
-            while over_vstup_hrace(hrac_hada, len(vygenerovane_cislo)) != "OK":
-                print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-                hrac_hada = input(">>> ")
+        while player_guess != generated_number:
+            number_of_guess = number_of_guess + 1
+            bull = count_bull(player_guess, generated_number)
+            regural_plural_bull = singular_or_plural(bull, "bull")
+            cow = count_cow(player_guess, generated_number)
+            regural_plural_cow = singular_or_plural(cow, "cow")
+            print(f"{bull} {regural_plural_bull}, {cow} {regural_plural_cow}")
+            print(f"{"-" * number_of_dashes}")
+            player_guess = input(">>> ")
+            while verify_player_input(player_guess, len(generated_number)) != "OK":
+                print(f"{"-" * number_of_dashes}")
+                player_guess = input(">>> ")
         else:
             end_time = datetime.now()
-            print("Correct, you've guessed the right number\nin " + str(pokus) + " guesses!")
-            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
+            print("Correct, you've guessed the right number\nin " + str(number_of_guess) + " guesses!")
+            print(f"{"-" * number_of_dashes}")
             print("That's amazing!")
-            min, sec = doba_hadani(start_time, end_time)
-            print(f"Guess time: {min} min {sec} s")
-            print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-            statistika[hra_cislo] = pokus
-        hra_cislo = hra_cislo + 1
-        print(f"""Statistika her - číslo hry: počet pokusů
-{statistika}""")
-        print(f"{"-" * pocet_znaku_nejdelsiho_radku(uvodni_text)}")
-
+            minutes, seconds = guess_time(start_time, end_time)
+            print(f"Guess time: {minutes} min {seconds} s")
+            print(f"{"-" * number_of_dashes}")
+            statistics[game_number] = number_of_guess
+        game_number = game_number + 1
+        print(f"""Game statistics - game number: number of guess
+{statistics}""")
+        print(f"{"-" * number_of_dashes}")
+        print(f"{"-" * number_of_dashes}")
